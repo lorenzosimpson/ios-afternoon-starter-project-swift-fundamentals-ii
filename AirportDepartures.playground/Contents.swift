@@ -1,6 +1,102 @@
 import UIKit
 
 
+enum FlightStatus: String {
+    case enRoute, scheduled, canceled, delayed, onTime, boarding
+}
+
+struct Airport {
+    var name: String
+    var city: String
+    var code: String
+}
+
+struct Flight {
+    var airline: String
+    var duration: Int
+    var flightNumber: Int
+    var departureTime: Date?
+    var arrivalTime: String?
+    var departureTerminal: String?
+    var arrivalTerminal: String?
+    var flightStatus: FlightStatus
+}
+
+class DepartureBoard {
+    var departures: [Flight]
+    var currentAirport: Airport
+    
+    init(currentAirport: Airport) {
+        self.departures = []
+        self.currentAirport = currentAirport
+    }
+    func alertPassengers() {
+        for departure in self.departures {
+            switch departure.flightStatus {
+            case .canceled:
+                print("Sorry, here's a voucher")
+            case .scheduled:
+                if let departureTerminal = departure.departureTerminal, let departureTime = departure.departureTime {
+                    print("Your flight is scheduled to depart at \(departureTime) from terminal \(departureTerminal)")
+                } else {
+                    print("TBD")
+                }
+            case .boarding:
+                if let terminal = departure.departureTerminal {
+                print("Your flight is boarding, head to terminal \(terminal)")
+                } else {
+                    print("see desk for info")
+                }
+            default:
+                print("")
+            }
+        }
+    }
+}
+
+
+let jfk = Airport(name: "John F Kennedy International",
+                  city: "New York City",
+                  code: "JFK")
+
+let jfkDepartureBoard = DepartureBoard(currentAirport: jfk)
+
+var jfkFlights: [Flight] = [
+    Flight(airline: "AA", duration: 120, flightNumber: 132, departureTime: Date(), arrivalTime: "5pm", departureTerminal: "A", arrivalTerminal: "B", flightStatus: .scheduled),
+    Flight(airline: "DL", duration: 50, flightNumber: 125, departureTime: nil, arrivalTime: "8pm", departureTerminal: nil, arrivalTerminal: nil, flightStatus: .canceled)
+]
+
+jfkDepartureBoard.departures = jfkFlights
+
+func printDepartures(departureBoard: DepartureBoard) {
+    for i in 0..<departureBoard.departures.count {
+        print("\(departureBoard.departures[i])\n")
+    }
+}
+
+func printDepartures2(departureBoard: DepartureBoard) {
+    for departure in departureBoard.departures {
+        if departure.departureTime != nil, departure.arrivalTime != nil, departure.departureTerminal != nil, departure.arrivalTerminal != nil {
+            print("Airline: \(departure.airline), Duration: \(departure.duration), Flight Number: \(departure.flightNumber), Flight Status: \(departure.flightStatus), departureTime: \(departure.departureTime), arrivalTime: \(departure.arrivalTime), departureTerminal: \(departure.departureTerminal), arrivalTerminal: \(departure.arrivalTerminal)")
+        } else {
+            print("Airline: \(departure.airline), Duration: \(departure.duration), Flight Number: \(departure.flightNumber), Flight Status: \(departure.flightStatus)")
+        }
+    }
+}
+
+func calculateAirfare(checkedBags: Int, distance: Int, travelers: Int) -> Double {
+    let bagCost: Double = 25.00
+    let costPerMile: Double = 0.10
+    let subtotal: Double = (Double(checkedBags) * bagCost ) + (Double(distance) * costPerMile)
+    let total: Double = subtotal * Double(travelers)
+    return total
+}
+
+calculateAirfare(checkedBags: 2, distance: 2000, travelers: 3)
+
+//printDepartures(departureBoard: jfkDepartureBoard)
+//printDepartures2(departureBoard: jfkDepartureBoard)
+jfkDepartureBoard.alertPassengers()
 //: ## 1. Create custom types to represent an Airport Departures display
 //: ![Airport Departures](matthew-smith-5934-unsplash.jpg)
 //: Look at data from [Departures at JFK Airport in NYC](https://www.airport-jfk.com/departures.php) for reference.
